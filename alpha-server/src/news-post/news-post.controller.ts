@@ -1,7 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Req } from '@nestjs/common';
-import { CreateNewsPostDto, PublishPostDto } from './dto/create-news-post.dto';
+import { CreateNewsPostDto, NewsPostStatus, PublishPostDto } from './dto/create-news-post.dto';
 import { NewsPostService } from './news-post.service';
 import { UpdateNewsPostDto } from './dto/update-news-post.dto';
+import { Public } from 'src/auth/auth.constant';
 
 @Controller('news-post')
 export class NewsPostController {
@@ -12,6 +13,7 @@ export class NewsPostController {
         return await this.newsPostService.create(createNewsPostDto);
     }
 
+    @Public()
     @Get('all')
     async findAll() {
         return await this.newsPostService.findAll();

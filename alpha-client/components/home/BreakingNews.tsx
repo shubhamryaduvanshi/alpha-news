@@ -1,19 +1,13 @@
-import Image from "next/image"
-import { fetchBreakingNews } from "../api/action"
-import { Suspense } from "react"
-import BreakingNews from "@/components/home/BreakingNews"
+import { fetchBreakingNews } from '@/app/api/action';
+import Image from 'next/image';
+import React from 'react'
 
-const BreakingNewsSlotPage = async () => {
-
+const BreakingNews = async () => {
+    const news = await fetchBreakingNews();
 
     return (
-
-        <div className="w-full">
-            <div className="flex justify-between items-center">
-                <h1 className="text-xl md:text-3xl font-medium">Breaking News</h1>
-                <p className="text-violet-600 text-sm underline">view all</p>
-            </div>
-            {/* <div className="flex flex-col md:flex-row gap-4 w-full mt-8 items-center">
+        <div className='w-full'>
+            <div className="flex flex-col md:flex-row gap-4 w-full mt-8 items-center">
                 <div className="bg-gray-400 w-full md:w-1/2 h-74 rounded-3xl p-2 relative">
                     <Image src="/breaking-news.jpg" alt="Breaking News Image" fill className="rounded-3xl object-cover" />
                     <div className="absolute bottom-4 z-30 left-4 text-black dark:text-white">
@@ -34,12 +28,9 @@ const BreakingNewsSlotPage = async () => {
                         </div>
                     ))}
                 </div>
-            </div> */}
-            <Suspense fallback={'loading...'}>
-                <BreakingNews />
-            </Suspense>
+            </div>
         </div>
     )
 }
 
-export default BreakingNewsSlotPage
+export default BreakingNews

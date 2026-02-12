@@ -24,7 +24,7 @@ export class NewsPostService {
     }
 
     async findAll() {
-        return await this.newsPostModel.find().populate('author', ['-password', '-email', '-mobileNumber', '-role', '-createdAt', '-updatedAt', '-__v', '-address']);
+        return await this.newsPostModel.find({status:NewsPostStatus.PUBLISHED}).populate('author', ['-password', '-email', '-mobileNumber', '-role', '-createdAt', '-updatedAt', '-__v', '-address']);
     }
 
     async findMyPosts(userId: string) {
