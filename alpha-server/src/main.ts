@@ -21,6 +21,6 @@ async function bootstrap() {
 
     app.useGlobalPipes(new ValidationPipe()); // adding dto validation at global level
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 3001);
 }
 bootstrap();
