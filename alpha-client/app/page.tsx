@@ -1,9 +1,7 @@
-import Header from "@/components/common/Header";
-import Hero from "@/components/home/Hero";
-import Image from "next/image";
+import BuyMeCoffee from "@/components/common/BuyMeCoffee";
 
 export default function Home() {
   return (
-<>  hdhd</>
+  <BuyMeCoffee />
   );
 }

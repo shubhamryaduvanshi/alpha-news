@@ -8,6 +8,7 @@ import { CommunicationModule } from './communication/communication.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { NewsPostModule } from './news-post/news-post.module';
+import { PaymentModule } from './payment/payment.module';
 
 
 @Module({
@@ -33,6 +34,7 @@ import { NewsPostModule } from './news-post/news-post.module';
     CommunicationModule,
     AuthModule,
     NewsPostModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
