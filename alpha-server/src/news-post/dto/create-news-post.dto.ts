@@ -73,3 +73,32 @@ export class PublishPostDto {
   @IsNotEmpty()
   postId: string;
 }
+
+
+export class NewsFilterDto {
+  @IsString()
+  @IsOptional()
+  search?: string;
+
+  // filter by category
+
+  @IsString()
+  @IsOptional()
+  category?: string;
+
+  // filter by tags
+
+  @IsArray()
+  @IsString({ each: true })
+  @ArrayMaxSize(10)
+  @IsOptional()
+  tags?: string[];
+
+  // pagination
+  @IsOptional()
+  page?: number;
+
+  @IsOptional()
+  limit?: number;
+}
+

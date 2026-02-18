@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CreateNewsPostDto, NewsPostStatus } from './dto/create-news-post.dto';
-import { Model } from 'mongoose';
+import { CreateNewsPostDto, NewsFilterDto, NewsPostStatus } from './dto/create-news-post.dto';
+import { Model, PipelineStage } from 'mongoose';
 import { NewsPost } from './entities/news-post.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { UpdateNewsPostDto } from './dto/update-news-post.dto';
@@ -23,9 +23,9 @@ export class NewsPostService {
         }
     }
 
-    async findAll() {
-        return await this.newsPostModel.find({status:NewsPostStatus.PUBLISHED}).populate('author', ['-password', '-email', '-mobileNumber', '-role', '-createdAt', '-updatedAt', '-__v', '-address']);
-    }
+    // async findAll() {
+    //     return await this.newsPostModel.find({status:NewsPostStatus.PUBLISHED}).populate('author', ['-password', '-email', '-mobileNumber', '-role', '-createdAt', '-updatedAt', '-__v', '-address']);
+    // }
 
     async findMyPosts(userId: string) {
         return await this.newsPostModel.find({ author: userId }).populate('author', ['-password', '-email', '-mobileNumber', '-role', '-createdAt', '-updatedAt', '-__v', '-address']);
@@ -68,5 +68,101 @@ export class NewsPostService {
         }
     }
 
+
+    async findAll(params: NewsFilterDto) {
+        const { search, category, tags, page = 1, limit = 10 } = params;
+
+        const filter: any = {};
+
+        if (search) {
+            filter.$or = [
+                { title: { $regex: search, $options: 'i' } },
+                { content: { $regex: search, $options: 'i' } }
+            ];
+        }
+
+        if (category) {
+            filter.category = category;
+        }
+
+        if (tags && tags.length > 0) {
+            filter.tags = { $in: tags };
+        }
+
+        const skip = (page - 1) * limit;
+
+        const pipeline: PipelineStage[] = [
+            { $match: filter },
+
+            {
+                $facet: {
+                    data: [
+                        { $sort: { publishedAt: -1 } },
+                        { $skip: skip },
+                        { $limit: limit },
+                        {
+                            $addFields: {
+                                author: { $toObjectId: "$author" }
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'users',
+                                localField: 'author',
+                                foreignField: '_id',
+                                as: 'author'
+                            }
+                        },
+                        {
+                            $unwind: {
+                                path: '$author',
+                                preserveNullAndEmptyArrays: true
+                            }
+                        },
+                        {
+                            $project: {
+                                title: 1,
+                                slug: 1,
+                                summary: 1,
+                                content: 1,
+                                category: 1,
+                                tags: 1,
+                                status: 1,
+                                publishedAt: 1,
+                                isBreaking: 1,
+                                views: 1,
+                                featuredImage: 1,
+                                author: {
+                                    _id: 1,
+                                    name: 1,
+                                    email: 1
+                                }
+                            }
+                        }
+                    ],
+
+                    totalCount: [
+                        { $count: 'count' }
+                    ]
+                }
+            }
+        ];
+
+        const result = await this.newsPostModel.aggregate(pipeline);
+
+        const data = result[0]?.data || [];
+        const total = result[0]?.totalCount[0]?.count || 0;
+        const totalPages = Math.ceil(total / limit);
+
+        return {
+            data,
+            pagination: {
+                total,
+                page: Number(page),
+                limit,
+                totalPages
+            }
+        };
+    }
 
 }

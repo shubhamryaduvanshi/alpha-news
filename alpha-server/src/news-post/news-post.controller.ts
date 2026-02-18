@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Req } from '@nestjs/common';
-import { CreateNewsPostDto, NewsPostStatus, PublishPostDto } from './dto/create-news-post.dto';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, Req } from '@nestjs/common';
+import { CreateNewsPostDto, NewsFilterDto, NewsPostStatus, PublishPostDto } from './dto/create-news-post.dto';
 import { NewsPostService } from './news-post.service';
 import { UpdateNewsPostDto } from './dto/update-news-post.dto';
 import { Public } from 'src/auth/auth.constant';
@@ -15,8 +15,8 @@ export class NewsPostController {
 
     @Public()
     @Get('all')
-    async findAll() {
-        return await this.newsPostService.findAll();
+    async findAll(@Query() queryObjects: NewsFilterDto) {
+        return await this.newsPostService.findAll(queryObjects);
     }
 
 
